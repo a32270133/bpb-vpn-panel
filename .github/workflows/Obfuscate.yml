@@ -29,7 +29,13 @@ jobs:
 
       - name: Clone BPB workjs
         run: |
-          wget -O origin.js https://raw.githubusercontent.com/bia-pain-bache/BPB-Worker-Panel/refs/heads/main/build/unobfuscated-worker.js
+          # Try multiple sources for the BPB Panel code
+          if ! curl -f -o origin.js https://raw.githubusercontent.com/bia-pain-bache/BPB-Worker-Panel/main/src/worker.js; then
+            echo "Failed to download from main branch, trying alternative..."
+            curl -f -o origin.js https://raw.githubusercontent.com/bia-pain-bache/BPB-Worker-Panel/master/src/worker.js || exit 1
+          fi
+          echo "Successfully downloaded BPB Panel source code"
+          ls -la origin.js
       - name: Obfuscate BPB worker js
         run: |
           javascript-obfuscator origin.js --output _worker.js \
